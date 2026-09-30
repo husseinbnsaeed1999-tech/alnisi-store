@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALNiSi Store</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:#f5f7fb;color:#172033}
+.wrap{max-width:1150px;margin:auto;padding:0 18px}.head{background:linear-gradient(135deg,#111827,#2563eb);color:#fff;padding:26px 0 30px}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:15px}.brand{font-size:29px;font-weight:900}.sub{opacity:.82;margin-top:5px}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:800;cursor:pointer}.white{background:#fff;color:#1d4ed8}.blue{background:#2563eb;color:#fff}.gray{background:#eef2f7;color:#374151}
+.search{width:100%;padding:15px;margin-top:20px;border:0;border-radius:14px;outline:0}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;padding:28px 0}
+.card{background:#fff;border:1px solid #e7eaf0;border-radius:20px;padding:14px;box-shadow:0 8px 25px #0000000a}.pic{height:165px;background:#eef2ff;border-radius:15px;display:flex;align-items:center;justify-content:center;overflow:hidden}.pic img{max-width:100%;max-height:100%;object-fit:contain}.emoji{font-size:60px}
+.name{font-size:19px;font-weight:900;margin-top:14px}.desc{color:#6b7280;font-size:13px;line-height:1.6;min-height:42px;margin-top:6px}.price{font-size:21px;font-weight:900;color:#2563eb;margin:12px 0}.buy{width:100%}
+footer{text-align:center;color:#8992a3;padding:30px}.note{padding:13px;background:#eff6ff;border:1px solid #cfe3ff;border-radius:12px;font-size:13px;line-height:1.6;color:#31547b}
+.overlay{display:none;position:fixed;inset:0;background:#0009;z-index:10;align-items:center;justify-content:center;padding:15px}.overlay.show{display:flex}.modal{background:#fff;width:min(850px,100%);max-height:94vh;overflow:auto;border-radius:22px;padding:20px}
+.field{margin:9px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #d9dee8;border-radius:10px}.field textarea{min-height:80px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.row{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #e3e7ef;border-radius:14px;margin:8px 0}.thumb{width:58px;height:58px;border-radius:10px;background:#eef2ff;display:flex;align-items:center;justify-content:center;overflow:hidden}.thumb img{max-width:100%;max-height:100%}.grow{flex:1}
+@media(max-width:650px){.nav{align-items:flex-start;flex-direction:column}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.row{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="head"><div class="wrap">
+<div class="nav"><div><div class="brand">ALNiSi Store</div><div class="sub">منتجات رقمية واشتراكات</div></div><button class="btn white" onclick="login()">🔐 الإدارة</button></div>
+<input id="q" class="search" placeholder="🔎 ابحث عن منتج..." oninput="render()">
+</div></header>
+<main class="wrap"><div id="grid" class="grid"></div></main>
+<footer>ALNiSi Store © 2026</footer>
+
+<div id="admin" class="overlay"><div class="modal">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2>لوحة الإدارة</h2><button class="btn gray" onclick="closeAdmin()">إغلاق</button></div>
+<div class="note">هذه الواجهة جاهزة للربط بقاعدة بيانات أونلاين. لا تضع مفاتيح الخدمة السرية داخل ملفات الواجهة.</div>
+<h3>إضافة منتج</h3>
+<div class="formgrid">
+<div class="field"><label>الاسم</label><input id="name"></div>
+<div class="field"><label>السعر</label><input id="price"></div>
+<div class="field"><label>العملة</label><select id="currency"><option>د.ل</option><option>$</option></select></div>
+<div class="field"><label>رمز بديل</label><input id="emoji" value="🛍️"></div>
+<div class="field full"><label>الوصف</label><textarea id="desc"></textarea></div>
+<div class="field full"><label>الصورة من الجهاز</label><input id="image" type="file" accept="image/*"></div>
+</div>
+<div class="actions"><button class="btn blue" onclick="addProduct()">إضافة</button></div>
+<h3>المنتجات</h3><div id="list"></div>
+<h3>واتساب</h3>
+<div class="field"><input id="wa" placeholder="مثال: 2189xxxxxxxx"></div>
+<div class="field"><textarea id="wamsg" placeholder="السلام عليكم، نبي نطلب: {product}"></textarea></div>
+<div class="actions"><button class="btn blue" onclick="saveSettings()">حفظ الإعدادات</button></div>
+</div></div>
+
+<script>
+const defaults=[
+["Netflix","45","د.ل","اشتراك Netflix","🎬"],["Shahid VIP","25","د.ل","اشتراك Shahid VIP","📺"],["Gemini AI Pro","85","د.ل","Gemini AI Pro","✨"],["Duolingo Super","","د.ل","Duolingo Super","🦉"],["Spotify Premium","","د.ل","Spotify Premium","🎵"],["PUBG Mobile UC","","د.ل","شحن PUBG Mobile","🎮"],["NordVPN","40","د.ل","NordVPN","🛡️"],["CapCut Pro","50","د.ل","CapCut Pro","✂️"],["WATCH IT","","د.ل","اشتراك WATCH IT","📺"],["Telegram Stars","","د.ل","شحن Telegram Stars","⭐"],["شحن كوينزات جوائز","","د.ل","شحن كوينزات الجوائز","🪙"],["Yalla Ludo","","د.ل","ماسات وذهبي Yalla Ludo","🎲"]];
+let products=JSON.parse(localStorage.getItem("alnisi_online_demo_products")||"null")||defaults.map((x,i)=>({id:Date.now()+i,name:x[0],price:x[1],currency:x[2],desc:x[3],emoji:x[4],image:"",active:true}));
+let settings=JSON.parse(localStorage.getItem("alnisi_online_demo_settings")||"null")||{wa:"",msg:"السلام عليكم، نبي نطلب: {product}"};
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function persist(){localStorage.setItem("alnisi_online_demo_products",JSON.stringify(products))}
+function render(){
+let q=document.getElementById("q").value.toLowerCase();
+let list=products.filter(p=>p.active!==false&&(p.name.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)));
+document.getElementById("grid").innerHTML=list.map(p=>`<article class="card"><div class="pic">${p.image?`<img src="${p.image}">`:`<div class="emoji">${esc(p.emoji)}</div>`}</div><div class="name">${esc(p.name)}</div><div class="desc">${esc(p.desc)}</div><div class="price">${p.price?esc(p.price)+" "+esc(p.currency):"السعر عند الطلب"}</div><button class="btn blue buy" onclick="order(${p.id})">طلب المنتج</button></article>`).join("");
+}
+function order(id){let p=products.find(x=>x.id===id);if(settings.wa){location.href="https://wa.me/"+settings.wa+"?text="+encodeURIComponent(settings.msg.replace("{product}",p.name))}else alert("أضف رقم واتساب من لوحة الإدارة.")}
+function login(){let p=prompt("كلمة مرور الإدارة");if(p==="1234")openAdmin();else if(p)alert("كلمة المرور غير صحيحة")}
+function openAdmin(){admin.classList.add("show");wa.value=settings.wa;wamsg.value=settings.msg;list.innerHTML=products.map(p=>`<div class="row"><div class="thumb">${p.image?`<img src="${p.image}">`:esc(p.emoji)}</div><div class="grow"><b>${esc(p.name)}</b><div>${p.price?esc(p.price)+" "+esc(p.currency):"السعر عند الطلب"}</div></div><button class="btn gray" onclick="toggle(${p.id})">${p.active===false?"إظهار":"إخفاء"}</button><button class="btn gray" onclick="del(${p.id})">حذف</button></div>`).join("")}
+function closeAdmin(){admin.classList.remove("show")}
+function toggle(id){let p=products.find(x=>x.id===id);p.active=p.active===false;persist();render();openAdmin()}
+function del(id){if(confirm("حذف المنتج؟")){products=products.filter(x=>x.id!==id);persist();render();openAdmin()}}
+function addProduct(){
+let f=image.files[0],r=new FileReader();
+let save=img=>{products.push({id:Date.now(),name:name.value.trim()||"منتج جديد",price:price.value.trim(),currency:currency.value,desc:desc.value.trim(),emoji:emoji.value||"🛍️",image:img||"",active:true});persist();render();openAdmin();name.value=price.value=desc.value="";image.value=""};
+if(f){r.onload=()=>save(r.result);r.readAsDataURL(f)}else save("")
+}
+function saveSettings(){settings={wa:wa.value.replace(/\D/g,""),msg:wamsg.value||"السلام عليكم، نبي نطلب: {product}"};localStorage.setItem("alnisi_online_demo_settings",JSON.stringify(settings));alert("تم حفظ إعدادات واتساب")}
+render();
+</script>
+</body></html>
